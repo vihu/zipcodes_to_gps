@@ -5,8 +5,9 @@ import csv
 from geopy.geocoders import Nominatim
 from multiprocessing import Pool
 import logging
+from config import ZIPCODE_CSV_FILE
 
-ZIPCODE_CSV_FILE = '/home/rahul/dev/zipcodes_to_gps/CA_ZIPCODES_0.csv'
+
 GEOLOCATOR = Nominatim()
 logging.basicConfig(filename='processor.log', level=logging.DEBUG)
 
