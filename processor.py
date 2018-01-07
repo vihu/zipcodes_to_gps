@@ -2,13 +2,13 @@
 Process CA zip codes and convert to GPS coordinates
 '''
 import csv
-from geopy.geocoders import Nominatim
-from multiprocessing import Pool
 import logging
-from config import ZIPCODE_CSV_FILE
+from multiprocessing import Pool
+from geopy.geocoders import GeocodeFarm, GoogleV3, OpenCage
+from config import ZIPCODE_CSV_FILE, OPENCAGE_API_KEY
+from random import choice
 
-
-GEOLOCATOR = Nominatim()
+GEOLOCATORS = [GoogleV3(), GeocodeFarm(), OpenCage(api_key=OPENCAGE_API_KEY)]
 logging.basicConfig(filename='processor.log', level=logging.DEBUG)
 
 def get_zipcodes(fname=ZIPCODE_CSV_FILE):
@@ -37,12 +37,13 @@ def get_coordinate(postalcode_dict):
     return Coordinate({lat, long}) from postalcode_dict being {'postalcode': ###}.
     '''
     try:
-        loc = GEOLOCATOR.geocode(postalcode_dict)
-        logging.info(loc)
+        locator = choice(GEOLOCATORS)
+        loc = locator.geocode(postalcode_dict)
     except Exception as e:
         logging.exception(e)
         loc = None
     coordinate = {loc.latitude, loc.longitude} if loc else ""
+    logging.info(coordinate)
     return coordinate
 
 def main():
@@ -50,4 +51,5 @@ def main():
     get_coordinates(zipcodes)
 
 if __name__ == '__main__':
+    # pass
     main()
